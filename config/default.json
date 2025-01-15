@@ -1,4 +1,4 @@
 {
-  "mongoURI": "mongodb://localhost:27017/hotel",
+  "mongoURI": "mongodb+srv://hotel:tushar123@cluster0.relfg.mongodb.net//hotel",
   "corsOrigin": ""
 }
