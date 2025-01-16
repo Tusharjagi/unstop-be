@@ -7,7 +7,6 @@ const floorSchema = new mongoose.Schema(
       {
         room: { type: Number, required: true },
         booked: { type: Boolean, default: false },
-        totalTravelTime: { type: Number, default: 0 },
       },
     ],
   },

@@ -34,6 +34,25 @@ const bookRoomByNumber = async (roomNumber) => {
   return { message: "Room successfully booked." };
 };
 
+const bookRoomByPerson = async (person) => {
+  const parseRoomPersons = Number(person);
+  const floors = await getAllFloors();
+
+  const availableRooms = floors
+    .map((floor) => {
+      return {
+        availableRooms: floor.rooms.filter((room) => !room.booked),
+      };
+    })
+    .filter((floor) => floor.availableRooms.length > 0);
+
+  if (!availableRooms.length) return { error: "Room not found." };
+
+  if (parseRoomPersons > 5) {
+    return { message: "More then 5 person is not allowed" };
+  }
+};
+
 const resetAllRooms = async () => {
   const floors = await getAllFloors();
   floors.forEach((floor) => {
@@ -89,6 +108,7 @@ module.exports = {
   getAllFloors,
   getAvailableRoomsCount,
   bookRoomByNumber,
+  bookRoomByPerson,
   resetAllRooms,
   randomBookRooms,
 };
