@@ -42,12 +42,16 @@ const bookRoomNumber = async (req, res) => {
 
 // Controller to book a room by room person
 const bookRoomPerson = async (req, res) => {
-  const { roomsRequested } = req.body;
-  const parseRoomsRequest = Number(roomsRequested);
-  if (parseRoomsRequest > 5) {
-    return res
-      .status(400)
-      .json({ message: "You can only book up to 5 rooms at a time." });
+  const { persons } = req.body;
+  try {
+    const result = await floorService.bookRoomByPerson(persons);
+    if (result.error) {
+      return res.status(400).json({ message: result.error });
+    }
+    return res.status(200).json({ message: result.message });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred." });
   }
 };
 
