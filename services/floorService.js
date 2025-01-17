@@ -38,6 +38,10 @@ const bookRoomByPerson = async (person) => {
   const parseRoomPersons = Number(person);
   const floors = await getAllFloors();
 
+  if (parseRoomPersons > 5) {
+    return { message: "More then 5 person is not allowed" };
+  }
+
   const availableRooms = floors
     .map((floor) => {
       return {
@@ -48,9 +52,41 @@ const bookRoomByPerson = async (person) => {
 
   if (!availableRooms.length) return { error: "Room not found." };
 
-  if (parseRoomPersons > 5) {
-    return { message: "More then 5 person is not allowed" };
+  function bookRooms(building, roomsToBook) {
+    const bookedRooms = [];
+
+    for (let floor of building) {
+      if (roomsToBook === 0) break;
+
+      let availableRooms = floor.rooms.filter((room) => !room.booked);
+
+      while (availableRooms.length > 0 && roomsToBook > 0) {
+        let room = availableRooms.shift();
+        room.booked = true;
+        bookedRooms.push(room.room);
+        roomsToBook--;
+      }
+    }
+
+    return bookedRooms;
   }
+
+  const bookedRooms = bookRooms(floors, parseRoomPersons);
+
+  floors.forEach(async (floor) => {
+    const originalFloor = floors.find((f) => f.floor === floor.floor);
+    floor.rooms.forEach((room) => {
+      const originalRoom = originalFloor.rooms.find(
+        (r) => r.room === room.room
+      );
+      if (bookedRooms.includes(room.room)) {
+        originalRoom.booked = true;
+      }
+    });
+    await originalFloor.save();
+  });
+
+  return { bookedRooms };
 };
 
 const resetAllRooms = async () => {
